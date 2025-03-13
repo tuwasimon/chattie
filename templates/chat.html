@@ -20,7 +20,7 @@
             height: 100vh;
         }
 
-        /* ✅ Smaller Chat Area + Responsive */
+        /* ✅ Chat Container - Smaller & Responsive */
         .chat-container {
             width: 90%;
             max-width: 360px; /* Limits width */
@@ -91,11 +91,14 @@
             margin: 0 8px;
         }
 
+        /* ✅ Fix: Properly Aligned Input & Send Button */
         .chat-input {
             display: flex;
+            align-items: center;
             padding: 10px;
             background: white;
             border-top: 1px solid #ddd;
+            gap: 8px; /* Adds spacing */
         }
 
         #userInput {
@@ -113,10 +116,13 @@
             background: #0078FF;
             color: white;
             border: none;
-            padding: 10px 15px;
+            width: 40px; /* Fixed width */
+            height: 40px; /* Fixed height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 18px;
             border-radius: 50%;
-            margin-left: 10px;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
         }
@@ -132,16 +138,27 @@
                 max-width: 330px; /* Further reduce width */
                 height: 80vh;
             }
-            
+
             .chat-input {
-                padding: 8px; /* Reduce padding */
+                padding: 8px;
             }
-            
-            .message p {
+
+            #userInput {
                 font-size: 13px; /* Reduce font size */
                 padding: 10px;
             }
+
+            .send-button {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
             
+            .message p {
+                font-size: 13px;
+                padding: 10px;
+            }
+
             .avatar {
                 width: 30px;
                 height: 30px;
