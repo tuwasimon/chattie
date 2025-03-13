@@ -16,18 +16,22 @@ def chatbot_response():
     data = request.get_json()
     user_input = data.get("message", "")
 
-    # ✅ Restrict bot to only school-related questions
+    # ✅ Change role to "Small Business Guide for Jalingo"
     system_prompt = {
         "role": "system",
-        "content": "You are a school chatbot. Answer only school-related questions. "
-                   "If a question is unrelated to school, respond with 'I can only answer school-related questions.'"
+        "content": (
+            "You are an expert on small businesses in Jalingo, Taraba State. "
+            "You help users find shops, restaurants, services, and other businesses. "
+            "Provide details about their locations, services, contact information, and operating hours. "
+            "If a business is unknown, suggest common business areas in Jalingo where users might find similar services."
+        )
     }
 
     try:
         response = openai.ChatCompletion.create(
             model="llama3-8b-8192",
             messages=[system_prompt, {"role": "user", "content": user_input}],
-            max_tokens=50  # ✅ Keep responses short and precise
+            max_tokens=50  # ✅ Allow longer responses for detailed answers
         )
 
         bot_reply = response["choices"][0]["message"]["content"]
