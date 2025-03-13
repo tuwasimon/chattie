@@ -9,25 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
+        /* ✅ Smaller Chat Area + Responsive */
         .chat-container {
-            width: 100%;
-            max-width: 450px; /* Ensures it doesn't become too large on bigger screens */
-            height: 90vh; /* Takes full height of the screen */
+            width: 90%;
+            max-width: 360px; /* Limits width */
+            height: 85vh; /* Adjusts for smaller screens */
             background: white;
             display: flex;
             flex-direction: column;
@@ -88,8 +85,8 @@
         }
 
         .avatar {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             margin: 0 8px;
         }
@@ -128,31 +125,26 @@
             background: #0056b3;
         }
 
-        /* 📱 Responsive Design */
-        @media screen and (max-width: 600px) {
+        /* ✅ Ensure Full Mobile Compatibility */
+        @media (max-width: 480px) {
             .chat-container {
-                width: 100%;
-                height: 100vh; /* Takes full screen height on mobile */
-                border-radius: 0; /* Removes border-radius on small screens */
+                width: 95%;
+                max-width: 330px; /* Further reduce width */
+                height: 80vh;
             }
-
-            .chat-header {
-                font-size: 16px;
-                padding: 12px;
+            
+            .chat-input {
+                padding: 8px; /* Reduce padding */
             }
-
-            #userInput {
-                font-size: 13px;
+            
+            .message p {
+                font-size: 13px; /* Reduce font size */
+                padding: 10px;
             }
-
-            .send-button {
-                padding: 8px 12px;
-                font-size: 16px;
-            }
-
+            
             .avatar {
-                width: 28px;
-                height: 28px;
+                width: 30px;
+                height: 30px;
             }
         }
     </style>
@@ -200,7 +192,7 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">Edu Bot by Tuwa</div>
+        <div class="chat-header">📚 SchoolBot Messenger</div>
         <div id="chatBox" class="chat-box"></div>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Type a message..." />
