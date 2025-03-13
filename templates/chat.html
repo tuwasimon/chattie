@@ -6,7 +6,6 @@
     <title>Cherryfield College Support</title>
     
     <style>
-        /* General Page Styling */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -17,10 +16,9 @@
             margin: 0;
         }
 
-        /* Chat Container */
         .chat-container {
             width: 450px;
-            height: 85vh; /* ✅ Increased height */
+            height: 85vh;
             background-color: white;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
@@ -28,7 +26,6 @@
             flex-direction: column;
         }
 
-        /* Chat Header */
         .chat-header {
             background-color: #2a9df4;
             color: white;
@@ -38,7 +35,6 @@
             font-weight: bold;
         }
 
-        /* Chat Box */
         .chat-box {
             flex: 1;
             overflow-y: auto;
@@ -48,7 +44,6 @@
             flex-direction: column;
         }
 
-        /* Messages */
         .message {
             max-width: 80%;
             margin-bottom: 10px;
@@ -71,7 +66,6 @@
             align-self: flex-start;
         }
 
-        /* Avatar Icons */
         .avatar {
             width: 30px;
             height: 30px;
@@ -79,7 +73,6 @@
             margin-right: 10px;
         }
 
-        /* Chat Input */
         .chat-input {
             display: flex;
             padding: 10px;
@@ -154,7 +147,13 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">Cherryfield College Support</div>
-        <div id="chatBox" class="chat-box"></div>
+        <div id="chatBox" class="chat-box">
+            <!-- ✅ Initial bot message -->
+            <div class="message bot-message">
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
+                <p>Hello! My name is <strong>Tuwa</strong>, and I am the customer support assistant for Cherryfield College Abuja. How can I assist you today?</p>
+            </div>
+        </div>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Ask about admissions, fees, or programs..." />
             <button class="send-button" onclick="sendMessage()">➤</button>
