@@ -61,7 +61,7 @@
             align-self: flex-start;
         }
 
-        .typing {
+        .typing-indicator {
             background: #e5e5ea;
             color: black;
             font-style: italic;
@@ -70,6 +70,31 @@
             border-radius: 10px;
             margin: 5px 0;
             max-width: 50%;
+            display: flex;
+            align-items: center;
+        }
+
+        .typing-dots {
+            width: 5px;
+            height: 5px;
+            background: black;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: blink 1.5s infinite;
+        }
+
+        .typing-dots:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
         }
 
         .chat-input {
@@ -119,15 +144,11 @@
             appendMessage(userInput, "user-message");
 
             // Show "typing..." animation
-            const chatBox = document.getElementById("chat-box");
-            const typingIndicator = document.createElement("div");
-            typingIndicator.className = "typing";
-            typingIndicator.id = "typing-indicator";
-            typingIndicator.textContent = "Tuwa is typing...";
-            chatBox.appendChild(typingIndicator);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            showTypingIndicator();
 
-            // Send to backend with a delay
+            // Simulate response delay based on message length
+            const delay = Math.min(3000, userInput.length * 100); // Max delay: 3s
+
             setTimeout(() => {
                 fetch("/chat", {
                     method: "POST",
@@ -136,14 +157,11 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Remove typing indicator
-                    document.getElementById("typing-indicator").remove();
-
-                    // Append bot message
+                    hideTypingIndicator();
                     appendMessage(data.response, "bot-message");
                 })
                 .catch(error => console.error("Error:", error));
-            }, 1500); // 1.5-second delay
+            }, delay);
 
             document.getElementById("user-input").value = "";
         }
@@ -155,6 +173,38 @@
             messageDiv.textContent = text;
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const chatBox = document.getElementById("chat-box");
+
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "typing-indicator";
+            typingDiv.id = "typing-indicator";
+
+            const textSpan = document.createElement("span");
+            textSpan.textContent = "Tuwa is typing";
+
+            const dot1 = document.createElement("div");
+            const dot2 = document.createElement("div");
+            const dot3 = document.createElement("div");
+
+            dot1.className = "typing-dots";
+            dot2.className = "typing-dots";
+            dot3.className = "typing-dots";
+
+            typingDiv.appendChild(textSpan);
+            typingDiv.appendChild(dot1);
+            typingDiv.appendChild(dot2);
+            typingDiv.appendChild(dot3);
+
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById("typing-indicator");
+            if (typingDiv) typingDiv.remove();
         }
     </script>
 
