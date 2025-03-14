@@ -3,137 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cherry Field Chatbot</title>
+    <title>Cherry Field College Chat</title>
+    
+    <!-- ✅ Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
+
         .chat-container {
-            width: 350px;
-            height: 500px;
+            width: 100%;
+            max-width: 1080px; /* ✅ Tecno Phantom X width */
+            height: 100vh; /* ✅ Full screen height */
+            max-height: 2340px; /* ✅ Tecno Phantom X height */
             background: white;
-            border-radius: 10px;
             display: flex;
             flex-direction: column;
+            border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
+
+        .chat-header {
+            background: #0078FF;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         .chat-box {
             flex: 1;
             padding: 10px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            background: #e9ebee;
         }
+
         .message {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 10px;
             max-width: 80%;
-            margin: 5px;
+        }
+
+        .message p {
             padding: 10px;
-            border-radius: 10px;
+            border-radius: 15px;
+            font-size: 13px; /* ✅ Smaller font for better readability */
+            max-width: 80%;
+            word-wrap: break-word;
         }
+
         .user-message {
-            background: #007bff;
-            color: white;
             align-self: flex-end;
+            flex-direction: row-reverse;
         }
-        .bot-message {
-            background: #e5e5ea;
+
+        .user-message p {
+            background: #0078FF;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message p {
+            background: #ffffff;
             color: black;
-            align-self: flex-start;
+            border-bottom-left-radius: 5px;
         }
-        .input-box {
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin: 0 8px;
+        }
+
+        .chat-input {
             display: flex;
             padding: 10px;
+            background: white;
             border-top: 1px solid #ddd;
-            background: #fff;
         }
-        input {
+
+        #userInput {
             flex: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 8px 12px;
-            margin-left: 5px;
+            padding: 12px;
             border: none;
-            background: #007bff;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+            background: #f1f1f1;
+        }
+
+        .send-button {
+            background: #0078FF;
             color: white;
-            border-radius: 5px;
+            border: none;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 50%;
+            margin-left: 10px;
             cursor: pointer;
         }
+
+        .send-button:hover {
+            background: #0056b3;
+        }
+
+        /* ✅ Quick Reply Buttons */
         .quick-replies {
             display: flex;
-            justify-content: space-around;
-            padding: 10px;
-            border-top: 1px solid #ddd;
-            background: #f9f9f9;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
         }
+
         .quick-reply {
-            padding: 5px 10px;
-            background: #007bff;
+            background: #0078FF;
             color: white;
-            border-radius: 5px;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
+        }
+
+        .quick-reply:hover {
+            background: #0056b3;
         }
     </style>
-</head>
-<body>
-    <div class="chat-container">
-        <div class="chat-box" id="chatBox">
-            <div class="bot-message message">Hello! My name is Tuwa. I am a customer support bot for Cherry Field College.</div>
-        </div>
-        <div class="quick-replies">
-            <div class="quick-reply" onclick="sendQuickReply('What are the admission requirements?')">Admissions</div>
-            <div class="quick-reply" onclick="sendQuickReply('What courses do you offer?')">Courses</div>
-            <div class="quick-reply" onclick="sendQuickReply('How can I contact the school?')">Contact</div>
-        </div>
-        <div class="input-box">
-            <input type="text" id="userInput" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
 
     <script>
-        function sendMessage() {
-            let userInput = document.getElementById("userInput").value;
-            if (!userInput.trim()) return;
-            
-            displayMessage(userInput, "user-message");
+        function sendMessage(message = null) {
+            let userInputField = document.getElementById("userInput");
+            let chatbox = document.getElementById("chatBox");
+
+            let userMessage = message || userInputField.value.trim();
+            if (userMessage === "") return;
+
+            chatbox.innerHTML += `
+                <div class="message user-message">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" class="avatar">
+                    <p>${userMessage}</p>
+                </div>`;
+
+            userInputField.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
 
             fetch("/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userInput })
+                body: JSON.stringify({ message: userMessage })
             })
             .then(response => response.json())
             .then(data => {
-                displayMessage(data.response, "bot-message");
+                chatbox.innerHTML += `
+                    <div class="message bot-message">
+                        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
+                        <p>${data.response}</p>
+                    </div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
             });
-
-            document.getElementById("userInput").value = "";
-        }
-
-        function sendQuickReply(text) {
-            document.getElementById("userInput").value = text;
-            sendMessage();
-        }
-
-        function displayMessage(text, className) {
-            let chatBox = document.getElementById("chatBox");
-            let messageDiv = document.createElement("div");
-            messageDiv.className = "message " + className;
-            messageDiv.textContent = text;
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
+</head>
+<body onload="sendMessage('My name is Tuwa. I am a customer support chatbot for Cherry Field College Abuja.')">
+    <div class="chat-container">
+        <div class="chat-header">📚 Cherry Field College Support</div>
+        <div id="chatBox" class="chat-box"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type a message..." />
+            <button class="send-button" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
 </body>
 </html>
