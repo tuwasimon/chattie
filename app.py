@@ -1,38 +1,35 @@
 from flask import Flask, render_template, request, jsonify
 import openai
-from flask_mail import Mail, Message  # ✅ Import Flask-Mail
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 
-# ✅ Configure Groq API
+# ✅ Groq API configuration
 openai.api_key = "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"
 openai.api_base = "https://api.groq.com/openai/v1"
 
-# ✅ Configure Flask-Mail (Use your email credentials)
-app.config["MAIL_SERVER"] = "smtp.gmail.com"  # Change for another provider
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "your-email@gmail.com"  # 🔹 Replace with real email
-app.config["MAIL_PASSWORD"] = "your-email-password"  # 🔹 Replace with real password
-app.config["MAIL_DEFAULT_SENDER"] = "your-email@gmail.com"
-
-mail = Mail(app)  # ✅ Initialize Flask-Mail
+# ✅ Email Configuration
+EMAIL_HOST = "smtp.gmail.com"  # Change if using another provider
+EMAIL_PORT = 587
+EMAIL_ADDRESS = "your-email@gmail.com"
+EMAIL_PASSWORD = "your-email-password"  # Use app password if needed
 
 @app.route("/")
 def index():
-    return render_template("chat.html")  # ✅ Ensure 'templates/chat.html' exists
+    return render_template("chat.html")
 
 @app.route("/chat", methods=["POST"])
 def chatbot_response():
     data = request.get_json()
     user_input = data.get("message", "")
 
-    # ✅ Set bot role
+    # ✅ Chatbot role
     system_prompt = {
         "role": "system",
-        "content": "You are Tuwa, a friendly and helpful customer support assistant for Cherry Field College, Abuja. "
-                   "Answer questions about admissions, school fees, location, and general inquiries. "
-                   "If the question is unrelated to the school, politely inform the user."
+        "content": "You are Tuwa, a customer support assistant for Cherry Field College, Abuja. "
+                   "Answer inquiries about the college, admissions, fees, courses, and general school policies."
     }
 
     try:
@@ -48,27 +45,30 @@ def chatbot_response():
     except Exception as e:
         return jsonify({"response": f"Error: {str(e)}"}), 500
 
-# ✅ New Route: Send Email Inquiry
 @app.route("/send_email", methods=["POST"])
 def send_email():
     data = request.get_json()
-    user_name = data.get("name", "User")
-    user_email = data.get("email", "")
-    user_message = data.get("message", "")
-
-    if not user_email or not user_message:
-        return jsonify({"response": "Email and message are required!"}), 400
+    subject = data.get("subject", "No Subject")
+    message = data.get("message", "No Message")
+    sender_email = data.get("email", "unknown@example.com")
 
     try:
-        msg = Message(
-            subject=f"Inquiry from {user_name}",
-            recipients=["support@cherryfieldcollege.com"],  # 🔹 Replace with school's email
-            body=f"Name: {user_name}\nEmail: {user_email}\n\nMessage:\n{user_message}",
-        )
-        mail.send(msg)
-        return jsonify({"response": "Your inquiry has been sent successfully!"})
+        msg = MIMEMultipart()
+        msg["From"] = EMAIL_ADDRESS
+        msg["To"] = EMAIL_ADDRESS
+        msg["Subject"] = f"Customer Inquiry: {subject}"
+        msg.attach(MIMEText(f"From: {sender_email}\n\n{message}", "plain"))
+
+        server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+        server.starttls()
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg.as_string())
+        server.quit()
+
+        return jsonify({"response": "Email sent successfully!"})
+
     except Exception as e:
-        return jsonify({"response": f"Error: {str(e)}"}), 500
+        return jsonify({"response": f"Email Error: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
