@@ -3,38 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tuwa - Cherry Field College Support</title>
+    <title>Cherry Field Chatbot</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-
         .chat-container {
-            width: 360px;
-            height: 600px; /* Increased height */
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
-
-        .chat-header {
-            background-color: #0084FF;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
         .chat-box {
             flex: 1;
             padding: 10px;
@@ -42,117 +31,109 @@
             display: flex;
             flex-direction: column;
         }
-
         .message {
-            max-width: 75%;
-            padding: 10px 15px;
-            margin-bottom: 8px;
-            border-radius: 18px;
-            font-size: 14px; /* Smaller text */
-            line-height: 1.4;
+            max-width: 80%;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 10px;
         }
-
-        .bot-message {
-            background-color: #f1f0f0;
-            color: #333;
-            align-self: flex-start;
-        }
-
         .user-message {
-            background-color: #0084FF;
+            background: #007bff;
             color: white;
             align-self: flex-end;
         }
-
-        .chat-input-container {
+        .bot-message {
+            background: #e5e5ea;
+            color: black;
+            align-self: flex-start;
+        }
+        .input-box {
             display: flex;
             padding: 10px;
-            background-color: #ffffff;
             border-top: 1px solid #ddd;
+            background: #fff;
         }
-
-        .chat-input {
+        input {
             flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 20px;
-            background-color: #f1f1f1;
-            font-size: 14px;
-            outline: none;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-
-        .send-btn {
-            background-color: #0084FF;
-            color: white;
-            border: none;
-            padding: 8px 15px;
+        button {
+            padding: 8px 12px;
             margin-left: 5px;
-            border-radius: 20px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
         }
-
-        .send-btn:hover {
-            background-color: #0070E0;
+        .quick-replies {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+        .quick-reply {
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-
     <div class="chat-container">
-        <div class="chat-header">Tuwa - Cherry Field College Support</div>
-        <div class="chat-box" id="chat-box">
-            <!-- Bot's welcome message -->
-            <div class="message bot-message">Hello! My name is Tuwa, your Cherry Field College customer support. How can I assist you today?</div>
+        <div class="chat-box" id="chatBox">
+            <div class="bot-message message">Hello! My name is Tuwa. I am a customer support bot for Cherry Field College.</div>
         </div>
-        <div class="chat-input-container">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Type a message...">
-            <button id="send-btn" class="send-btn">Send</button>
+        <div class="quick-replies">
+            <div class="quick-reply" onclick="sendQuickReply('What are the admission requirements?')">Admissions</div>
+            <div class="quick-reply" onclick="sendQuickReply('What courses do you offer?')">Courses</div>
+            <div class="quick-reply" onclick="sendQuickReply('How can I contact the school?')">Contact</div>
+        </div>
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
-        document.getElementById("send-btn").addEventListener("click", sendMessage);
-        document.getElementById("chat-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
-            }
-        });
-
         function sendMessage() {
-            let inputField = document.getElementById("chat-input");
-            let message = inputField.value.trim();
-            if (message === "") return;
+            let userInput = document.getElementById("userInput").value;
+            if (!userInput.trim()) return;
+            
+            displayMessage(userInput, "user-message");
 
-            let chatBox = document.getElementById("chat-box");
-
-            // Display user message
-            let userMessageDiv = document.createElement("div");
-            userMessageDiv.className = "message user-message";
-            userMessageDiv.textContent = message;
-            chatBox.appendChild(userMessageDiv);
-
-            // Send message to backend
             fetch("/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ message: userInput })
             })
             .then(response => response.json())
             .then(data => {
-                // Display bot response
-                let botMessageDiv = document.createElement("div");
-                botMessageDiv.className = "message bot-message";
-                botMessageDiv.textContent = data.response;
-                chatBox.appendChild(botMessageDiv);
-
-                // Auto-scroll to latest message
-                chatBox.scrollTop = chatBox.scrollHeight;
+                displayMessage(data.response, "bot-message");
             });
 
-            inputField.value = "";
+            document.getElementById("userInput").value = "";
+        }
+
+        function sendQuickReply(text) {
+            document.getElementById("userInput").value = text;
+            sendMessage();
+        }
+
+        function displayMessage(text, className) {
+            let chatBox = document.getElementById("chatBox");
+            let messageDiv = document.createElement("div");
+            messageDiv.className = "message " + className;
+            messageDiv.textContent = text;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
-
 </body>
 </html>
