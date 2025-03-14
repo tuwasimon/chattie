@@ -22,9 +22,9 @@
 
         .chat-container {
             width: 100%;
-            max-width: 1080px; /* ✅ Tecno Phantom X width */
-            height: 100vh; /* ✅ Full screen height */
-            max-height: 2340px; /* ✅ Tecno Phantom X height */
+            max-width: 1080px;
+            height: 100vh;
+            max-height: 2340px;
             background: white;
             display: flex;
             flex-direction: column;
@@ -61,7 +61,7 @@
         .message p {
             padding: 10px;
             border-radius: 15px;
-            font-size: 13px; /* ✅ Smaller font for better readability */
+            font-size: 13px;
             max-width: 80%;
             word-wrap: break-word;
         }
@@ -83,11 +83,12 @@
             border-bottom-left-radius: 5px;
         }
 
+        /* ✅ Reduced Avatar Size */
         .avatar {
-            width: 35px;
-            height: 35px;
+            width: 28px; /* Previously 35px */
+            height: 28px;
             border-radius: 50%;
-            margin: 0 8px;
+            margin: 0 6px;
         }
 
         .chat-input {
@@ -121,28 +122,6 @@
         .send-button:hover {
             background: #0056b3;
         }
-
-        /* ✅ Quick Reply Buttons */
-        .quick-replies {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .quick-reply {
-            background: #0078FF;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .quick-reply:hover {
-            background: #0056b3;
-        }
     </style>
 
     <script>
@@ -153,10 +132,11 @@
             let userMessage = message || userInputField.value.trim();
             if (userMessage === "") return;
 
+            // ✅ Fix: Ensure user message appears as the user's
             chatbox.innerHTML += `
                 <div class="message user-message">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" class="avatar">
                     <p>${userMessage}</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png" class="avatar">
                 </div>`;
 
             userInputField.value = "";
@@ -169,6 +149,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                // ✅ Fix: Ensure bot messages appear correctly
                 chatbox.innerHTML += `
                     <div class="message bot-message">
                         <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
