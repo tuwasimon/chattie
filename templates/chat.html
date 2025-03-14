@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cherry Field College Chat</title>
-    
-    <!-- ✅ Google Fonts: Poppins -->
+
+    <!-- ✅ Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -24,7 +24,6 @@
             width: 100%;
             max-width: 1080px;
             height: 100vh;
-            max-height: 2340px;
             background: white;
             display: flex;
             flex-direction: column;
@@ -85,7 +84,7 @@
 
         /* ✅ Reduced Avatar Size */
         .avatar {
-            width: 28px; /* Previously 35px */
+            width: 28px; 
             height: 28px;
             border-radius: 50%;
             margin: 0 6px;
@@ -132,7 +131,6 @@
             let userMessage = message || userInputField.value.trim();
             if (userMessage === "") return;
 
-            // ✅ Fix: Ensure user message appears as the user's
             chatbox.innerHTML += `
                 <div class="message user-message">
                     <p>${userMessage}</p>
@@ -149,7 +147,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                // ✅ Fix: Ensure bot messages appear correctly
                 chatbox.innerHTML += `
                     <div class="message bot-message">
                         <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
@@ -158,11 +155,21 @@
                 chatbox.scrollTop = chatbox.scrollHeight;
             });
         }
+
+        // ✅ Automatically send bot's welcome message when the page loads
+        window.onload = function() {
+            let chatbox = document.getElementById("chatBox");
+            chatbox.innerHTML += `
+                <div class="message bot-message">
+                    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
+                    <p>Hello! My name is Tuwa, and I am the customer support chatbot for Cherry Field College Abuja. How can I assist you today?</p>
+                </div>`;
+        };
     </script>
 </head>
-<body onload="sendMessage('My name is Tuwa. I am a customer support chatbot for Cherry Field College Abuja.')">
+<body>
     <div class="chat-container">
-        <div class="chat-header">📚 Cherry Field College Support.</div>
+        <div class="chat-header">📚 Cherry Field College Support</div>
         <div id="chatBox" class="chat-box"></div>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Type a message..." />
