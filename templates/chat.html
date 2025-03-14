@@ -61,6 +61,17 @@
             align-self: flex-start;
         }
 
+        .typing {
+            background: #e5e5ea;
+            color: black;
+            font-style: italic;
+            align-self: flex-start;
+            padding: 6px 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            max-width: 50%;
+        }
+
         .chat-input {
             display: flex;
             padding: 10px;
@@ -83,45 +94,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        /* Quick Reply Buttons */
-        .quick-replies {
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .quick-replies button {
-            background: #0078ff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Email Form */
-        .email-form {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            padding: 15px;
-        }
-
-        .email-form input, .email-form textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .email-form button {
-            background: #0078ff;
-            color: white;
-            border: none;
-            padding: 8px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -131,22 +103,6 @@
 
         <div class="chat-box" id="chat-box">
             <div class="bot-message message">Hi! My name is Tuwa, a customer support assistant for Cherry Field College. How can I assist you?</div>
-        </div>
-
-        <!-- Quick Reply Buttons -->
-        <div class="quick-replies" id="quick-replies">
-            <button onclick="sendQuickReply('What are the admission requirements?')">Admissions</button>
-            <button onclick="sendQuickReply('What are the school fees?')">Fees</button>
-            <button onclick="sendQuickReply('Where is the school located?')">Location</button>
-            <button onclick="showEmailForm()">Email Support</button>
-        </div>
-
-        <!-- Email Inquiry Form -->
-        <div class="email-form" id="email-form">
-            <input type="text" id="user-name" placeholder="Your Name">
-            <input type="email" id="user-email" placeholder="Your Email">
-            <textarea id="user-message" placeholder="Your Inquiry"></textarea>
-            <button onclick="sendEmail()">Send Inquiry</button>
         </div>
 
         <div class="chat-input">
@@ -160,26 +116,36 @@
             const userInput = document.getElementById("user-input").value;
             if (!userInput.trim()) return;
 
-            // Add user message to chat
             appendMessage(userInput, "user-message");
 
-            // Send to backend
-            fetch("/chat", {
-                method: "POST",
-                body: JSON.stringify({ message: userInput }),
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => appendMessage(data.response, "bot-message"))
-            .catch(error => console.error("Error:", error));
+            // Show "typing..." animation
+            const chatBox = document.getElementById("chat-box");
+            const typingIndicator = document.createElement("div");
+            typingIndicator.className = "typing";
+            typingIndicator.id = "typing-indicator";
+            typingIndicator.textContent = "Tuwa is typing...";
+            chatBox.appendChild(typingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Clear input field
+            // Send to backend with a delay
+            setTimeout(() => {
+                fetch("/chat", {
+                    method: "POST",
+                    body: JSON.stringify({ message: userInput }),
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove typing indicator
+                    document.getElementById("typing-indicator").remove();
+
+                    // Append bot message
+                    appendMessage(data.response, "bot-message");
+                })
+                .catch(error => console.error("Error:", error));
+            }, 1500); // 1.5-second delay
+
             document.getElementById("user-input").value = "";
-        }
-
-        function sendQuickReply(text) {
-            document.getElementById("user-input").value = text;
-            sendMessage();
         }
 
         function appendMessage(text, className) {
@@ -189,34 +155,6 @@
             messageDiv.textContent = text;
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function showEmailForm() {
-            document.getElementById("email-form").style.display = "flex";
-        }
-
-        function sendEmail() {
-            const userName = document.getElementById("user-name").value;
-            const userEmail = document.getElementById("user-email").value;
-            const userMessage = document.getElementById("user-message").value;
-
-            if (!userName || !userEmail || !userMessage) {
-                alert("Please fill in all fields.");
-                return;
-            }
-
-            fetch("/send_email", {
-                method: "POST",
-                body: JSON.stringify({
-                    name: userName,
-                    email: userEmail,
-                    message: userMessage
-                }),
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(response => response.json())
-            .then(data => alert(data.response))
-            .catch(error => console.error("Error:", error));
         }
     </script>
 
