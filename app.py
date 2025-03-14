@@ -28,7 +28,7 @@ def chatbot_response():
         response = openai.ChatCompletion.create(
             model="llama3-8b-8192",
             messages=[system_prompt, {"role": "user", "content": user_input}],
-            max_tokens=50  # ✅ Keep responses clear and concise
+            max_tokens=100  # ✅ Keep responses clear and concise
         )
 
         bot_reply = response["choices"][0]["message"]["content"]
