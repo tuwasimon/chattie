@@ -2,19 +2,19 @@ from flask import Flask, render_template, request, jsonify
 import openai
 import smtplib
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 
-# ✅ Groq API configuration
+# ✅ Set Groq API key
 openai.api_key = "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"
 openai.api_base = "https://api.groq.com/openai/v1"
 
-# ✅ Email Configuration
-EMAIL_HOST = "smtp.gmail.com"  # Change if using another provider
-EMAIL_PORT = 587
-EMAIL_ADDRESS = "your-email@gmail.com"
-EMAIL_PASSWORD = "your-email-password"  # Use app password if needed
+# ✅ Define bot behavior
+system_prompt = {
+    "role": "system",
+    "content": "You are Punch.cool’s AI assistant. Answer only questions about Punch.cool. "
+               "If a question is unrelated, respond with 'I can only answer questions about Punch.cool.'"
+}
 
 @app.route("/")
 def index():
@@ -24,13 +24,6 @@ def index():
 def chatbot_response():
     data = request.get_json()
     user_input = data.get("message", "")
-
-    # ✅ Chatbot role
-    system_prompt = {
-        "role": "system",
-        "content": "You are Tuwa, a customer support assistant for Cherry Field College, Abuja. "
-                   "Answer inquiries about the college, admissions, fees, courses, and general school policies."
-    }
 
     try:
         response = openai.ChatCompletion.create(
@@ -45,30 +38,34 @@ def chatbot_response():
     except Exception as e:
         return jsonify({"response": f"Error: {str(e)}"}), 500
 
+# ✅ Email Support
 @app.route("/send_email", methods=["POST"])
 def send_email():
     data = request.get_json()
-    subject = data.get("subject", "No Subject")
-    message = data.get("message", "No Message")
-    sender_email = data.get("email", "unknown@example.com")
+    user_email = data.get("email")
+    message = data.get("message")
 
     try:
-        msg = MIMEMultipart()
-        msg["From"] = EMAIL_ADDRESS
-        msg["To"] = EMAIL_ADDRESS
-        msg["Subject"] = f"Customer Inquiry: {subject}"
-        msg.attach(MIMEText(f"From: {sender_email}\n\n{message}", "plain"))
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        sender_email = "your_email@gmail.com"  # Replace with your email
+        sender_password = "your_password"  # Replace with your password
 
-        server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+        msg = MIMEText(message)
+        msg["Subject"] = "Customer Inquiry - Punch.cool"
+        msg["From"] = sender_email
+        msg["To"] = "support@punch.cool"
+
+        server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()
-        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg.as_string())
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, "support@punch.cool", msg.as_string())
         server.quit()
 
-        return jsonify({"response": "Email sent successfully!"})
+        return jsonify({"response": "Your inquiry has been sent successfully."})
 
     except Exception as e:
-        return jsonify({"response": f"Email Error: {str(e)}"}), 500
+        return jsonify({"response": f"Failed to send email: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
