@@ -5,49 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Punch.cool Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .chat-container { width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 10px; }
-        .chat-box { max-height: 400px; overflow-y: auto; padding: 10px; }
-        .chat-bubble { padding: 10px; border-radius: 10px; margin-bottom: 10px; max-width: 80%; }
-        .bot { background: #007bff; color: white; align-self: flex-start; }
-        .user { background: #ccc; color: black; align-self: flex-end; }
-        .input-area { display: flex; margin-top: 10px; }
-        .input-box { flex: 1; padding: 10px; border-radius: 5px; }
-        .send-btn { padding: 10px; border: none; background: #007bff; color: white; cursor: pointer; }
-        .typing { font-size: 12px; color: gray; }
-        .quick-replies { display: flex; gap: 5px; margin-top: 10px; }
-        .quick-reply { padding: 5px 10px; background: #007bff; color: white; border-radius: 5px; cursor: pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .chat-header {
+            background: #0078FF;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Chat messages */
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .bot {
+            background: #0078FF;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .user {
+            background: #E4E6EB;
+            color: black;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        /* Avatar */
+        .chat-bubble img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Input field */
+        .input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            background: white;
+        }
+
+        .input-box {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: #0078FF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        /* Typing animation */
+        .typing {
+            font-size: 12px;
+            color: gray;
+            display: none;
+        }
+
+        /* Quick reply buttons */
+        .quick-replies {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #ddd;
+        }
+
+        .quick-reply {
+            padding: 8px 12px;
+            background: #0078FF;
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Scrollbar styling */
+        .chat-box::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 5px;
+        }
+
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <h2>Punch.cool Chatbot</h2>
+        <!-- Chat header -->
+        <div class="chat-header">Punch.cool Chat</div>
+
+        <!-- Chat messages -->
         <div class="chat-box" id="chat-box">
-            <div class="chat-bubble bot">Hello! I'm Tuwa, your Punch.cool assistant. How can I help?</div>
+            <div class="chat-bubble bot">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Bot">
+                Hello! I'm Tuwa, your Punch.cool assistant. How can I help?
+            </div>
         </div>
 
-        <div class="typing" id="typing" style="display: none;">Tuwa is typing...</div>
+        <div class="typing" id="typing">Tuwa is typing...</div>
 
+        <!-- Quick replies -->
         <div class="quick-replies">
             <div class="quick-reply" onclick="sendQuickReply('What services does Punch.cool offer?')">Services</div>
             <div class="quick-reply" onclick="sendQuickReply('How can I contact Punch.cool?')">Contact</div>
             <div class="quick-reply" onclick="sendQuickReply('Where is Punch.cool located?')">Location</div>
         </div>
 
+        <!-- Input field -->
         <div class="input-area">
-            <input type="text" id="user-input" class="input-box" placeholder="Type your message...">
-            <button class="send-btn" onclick="sendMessage()">Send</button>
+            <input type="text" id="user-input" class="input-box" placeholder="Type a message...">
+            <button class="send-btn" onclick="sendMessage()">&#9658;</button>
         </div>
-
-        <button onclick="sendEmailSupport()">Email Support</button>
     </div>
 
     <script>
         function appendMessage(role, message) {
             let chatBox = document.getElementById("chat-box");
             let bubble = document.createElement("div");
+            let img = document.createElement("img");
+            img.src = role === "bot"
+                ? "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                : "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+            img.alt = role;
             bubble.classList.add("chat-bubble", role);
-            bubble.innerText = message;
+            bubble.appendChild(img);
+            bubble.appendChild(document.createTextNode(message));
+
             chatBox.appendChild(bubble);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -77,21 +215,6 @@
         function sendQuickReply(text) {
             document.getElementById("user-input").value = text;
             sendMessage();
-        }
-
-        function sendEmailSupport() {
-            let userEmail = prompt("Enter your email:");
-            let message = prompt("Enter your inquiry:");
-
-            if (!userEmail || !message) return;
-
-            fetch("/send_email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: userEmail, message: message })
-            })
-            .then(response => response.json())
-            .then(data => alert(data.response));
         }
     </script>
 </body>
